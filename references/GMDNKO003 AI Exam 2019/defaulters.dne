@@ -1,0 +1,100 @@
+// ~->[DNET-1]->~
+
+// File created by an unlicensed user using Netica 6.05 on Oct 30, 2019 at 10:07:49 UTC.
+
+bnet defaulters {
+AutoCompile = TRUE;
+autoupdate = TRUE;
+whenchanged = 1572429826;
+
+visual V1 {
+	defdispform = BELIEFBARS;
+	nodelabeling = TITLE;
+	NodeMaxNumEntries = 50;
+	nodefont = font {shape= "Arial"; size= 9;};
+	linkfont = font {shape= "Arial"; size= 9;};
+	ShowLinkStrengths = 1;
+	windowposn = (57, 55, 776, 548);
+	resolution = 72;
+	magnification = 0.840896;
+	drawingbounds = (1372, 874);
+	showpagebreaks = FALSE;
+	usegrid = TRUE;
+	gridspace = (6, 6);
+	NodeSet Node {BuiltIn = 1; Color = 0x00e1e1e1;};
+	NodeSet Nature {BuiltIn = 1; Color = 0x00f8eed2;};
+	NodeSet Deterministic {BuiltIn = 1; Color = 0x00d3caa6;};
+	NodeSet Finding {BuiltIn = 1; Color = 0x00c8c8c8;};
+	NodeSet Constant {BuiltIn = 1; Color = 0x00ffffff;};
+	NodeSet ConstantValue {BuiltIn = 1; Color = 0x00ffffb4;};
+	NodeSet Utility {BuiltIn = 1; Color = 0x00ffbdbd;};
+	NodeSet Decision {BuiltIn = 1; Color = 0x00dee8ff;};
+	NodeSet Documentation {BuiltIn = 1; Color = 0x00f0fafa;};
+	NodeSet Title {BuiltIn = 1; Color = 0x00ffffff;};
+	PrinterSetting A {
+		margins = (1270, 1270, 1270, 1270);
+		};
+	};
+
+node Gender {
+	discrete = TRUE;
+	states = (Male, Female);
+	levels = (1, 2);
+	kind = NATURE;
+	chance = CHANCE;
+	parents = ();
+	probs = 
+		// Male         Female       
+		  (0.55,        0.45);
+	title = "Gender";
+	whenchanged = 1572429598;
+	belief = (0.55, 0.45);
+	visual V1 {
+		center = (288, 294);
+		height = 2;
+		};
+	};
+
+node Age {
+	discrete = TRUE;
+	states = (Young, NotYoung);
+	levels = (1, 2);
+	kind = NATURE;
+	chance = CHANCE;
+	parents = ();
+	probs = 
+		// Young        NotYoung     
+		  (0.5,         0.5);
+	title = "Age";
+	whenchanged = 1572429826;
+	belief = (0.5, 0.5);
+	visual V1 {
+		center = (576, 294);
+		height = 1;
+		};
+	};
+
+node Defaulters {
+	discrete = TRUE;
+	states = (True, False);
+	levels = (1, 2);
+	kind = NATURE;
+	chance = CHANCE;
+	parents = (Gender, Age);
+	probs = 
+		// True         False         // Gender Age      
+		  (0.06,        0.94,         // Male   Young    
+		   0.04,        0.96,         // Male   NotYoung 
+		   0.03,        0.97,         // Female Young    
+		   0.02,        0.98);        // Female NotYoung ;
+	numcases = 1;
+	title = "TB Treatment Defaulters";
+	whenchanged = 1572429725;
+	belief = (0.03875, 0.96125);
+	visual V1 {
+		center = (420, 72);
+		height = 3;
+		};
+	};
+ElimOrder = (Gender, Age, Defaulters);
+};

@@ -1,0 +1,157 @@
+// ~->[DNET-1]->~
+
+// File created by an unlicensed user using Netica 6.05 on Oct 30, 2019 at 19:01:36 UTC.
+
+bnet humidity_control {
+AutoCompile = TRUE;
+autoupdate = TRUE;
+whenchanged = 1572435035;
+
+visual V1 {
+	defdispform = BELIEFBARS;
+	nodelabeling = TITLE;
+	NodeMaxNumEntries = 50;
+	nodefont = font {shape= "Arial"; size= 9;};
+	linkfont = font {shape= "Arial"; size= 9;};
+	ShowLinkStrengths = 1;
+	windowposn = (26, 26, 776, 560);
+	scrollposn = (57, 0);
+	resolution = 72;
+	magnification = 0.594604;
+	drawingbounds = (2489, 1352);
+	showpagebreaks = FALSE;
+	usegrid = TRUE;
+	gridspace = (6, 6);
+	NodeSet Node {BuiltIn = 1; Color = 0x00e1e1e1;};
+	NodeSet Nature {BuiltIn = 1; Color = 0x00f8eed2;};
+	NodeSet Deterministic {BuiltIn = 1; Color = 0x00d3caa6;};
+	NodeSet Finding {BuiltIn = 1; Color = 0x00c8c8c8;};
+	NodeSet Constant {BuiltIn = 1; Color = 0x00ffffff;};
+	NodeSet ConstantValue {BuiltIn = 1; Color = 0x00ffffb4;};
+	NodeSet Utility {BuiltIn = 1; Color = 0x00ffbdbd;};
+	NodeSet Decision {BuiltIn = 1; Color = 0x00dee8ff;};
+	NodeSet Documentation {BuiltIn = 1; Color = 0x00f0fafa;};
+	NodeSet Title {BuiltIn = 1; Color = 0x00ffffff;};
+	PrinterSetting A {
+		margins = (1270, 1270, 1270, 1270);
+		};
+	};
+
+node HumidifierOnAtT0 {
+	discrete = TRUE;
+	states = (Yes, No);
+	levels = (1, 2);
+	kind = NATURE;
+	chance = CHANCE;
+	parents = ();
+	probs = 
+		// Yes          No           
+		  (0.05,        0.95);
+	title = "Humidifier On At Time_t0";
+	whenchanged = 1572432689;
+	belief = (0.05, 0.95);
+	visual V1 {
+		center = (174, 408);
+		height = 6;
+		};
+	};
+
+node ActualHumidityAtTime {
+	discrete = TRUE;
+	states = (Low, Normal);
+	levels = (1, 2);
+	kind = NATURE;
+	parents = (HumidifierOnAtT0);
+	title = "Actual Humidity Level At Time_t0";
+	whenchanged = 1572434265;
+	belief = (0.5, 0.5);
+	visual V1 {
+		center = (282, 156);
+		height = 1;
+		};
+	};
+
+node HumidifierOnAtT1 {
+	discrete = TRUE;
+	states = (Yes, No);
+	levels = (1, 2);
+	kind = NATURE;
+	chance = DETERMIN;
+	parents = ();
+	functable = 
+		  (Yes);
+	title = "Humidifier On At Time_t1";
+	whenchanged = 1572432643;
+	belief = (1, 0);
+	visual V1 {
+		center = (672, 408);
+		height = 3;
+		};
+	};
+
+node ChangeInHumidityAtTime1 {
+	discrete = TRUE;
+	states = (Low, Normal);
+	levels = (1, 2);
+	kind = NATURE;
+	chance = CHANCE;
+	parents = (HumidifierOnAtT1, ActualHumidityAtTime);
+	probs = 
+		// Low          Normal        // HumidifierOnAtT1 ActualHumidityAtTime 
+		  (0.3,         0.7,          // Yes              Low                  
+		   0.01,        0.99,         // Yes              Normal               
+		   1,           0,            // No               Low                  
+		   0.1,         0.9);         // No               Normal               ;
+	numcases = 1;
+	title = "Change In Humidity Level At Time_t1";
+	whenchanged = 1572434952;
+	belief = (0.155, 0.845);
+	visual V1 {
+		center = (816, 156);
+		height = 2;
+		};
+	};
+
+node Sensor {
+	discrete = TRUE;
+	states = (LowHumidity, NormalHumidity);
+	levels = (1, 2);
+	kind = NATURE;
+	chance = CHANCE;
+	parents = (ActualHumidityAtTime);
+	probs = 
+		// LowHumidity  NormalHumidity  // ActualHumidityAtTime 
+		  (0.97,        0.03,         // Low                  
+		   0.02,        0.98);        // Normal               ;
+	numcases = 1;
+	title = "Sensor_t0";
+	whenchanged = 1572435024;
+	belief = (0.495, 0.505);
+	visual V1 {
+		center = (408, 408);
+		height = 5;
+		};
+	};
+
+node Sensor1 {
+	discrete = TRUE;
+	states = (LowHumidity, NormalHumidity);
+	levels = (1, 2);
+	kind = NATURE;
+	chance = CHANCE;
+	parents = (ChangeInHumidityAtTime1);
+	probs = 
+		// LowHumidity  NormalHumidity  // ChangeInHumidityAtTime1 
+		  (0.97,        0.03,         // Low                     
+		   0.02,        0.98);        // Normal                  ;
+	numcases = 1;
+	title = "Sensor_t1";
+	whenchanged = 1572435035;
+	belief = (0.16725, 0.83275);
+	visual V1 {
+		center = (924, 408);
+		height = 4;
+		};
+	};
+ElimOrder = (HumidifierOnAtT0, Sensor, Sensor1, ActualHumidityAtTime, HumidifierOnAtT1, ChangeInHumidityAtTime1);
+};
